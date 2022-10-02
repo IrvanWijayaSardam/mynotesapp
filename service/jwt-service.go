@@ -14,7 +14,7 @@ type JWTService interface {
 }
 
 type jwtCustomClaim struct {
-	UserID string `json:"user_id"`
+	UserID string `json:"userid"`
 	jwt.StandardClaims
 }
 
