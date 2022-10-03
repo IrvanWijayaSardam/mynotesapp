@@ -11,13 +11,16 @@ import (
 )
 
 var (
-	db             *gorm.DB                  = config.SetupDatabaseConnection()
-	userRepository repository.UserRepository = repository.NewUserRepository(db)
-	jwtService     service.JWTService        = service.NewJWTService()
-	userService    service.UserService       = service.NewUserService(userRepository)
-	authService    service.AuthService       = service.NewAuthService(userRepository)
-	authController controller.AuthController = controller.NewAuthController(authService, jwtService)
-	userController controller.UserController = controller.NewUserController(userService, jwtService)
+	db              *gorm.DB                   = config.SetupDatabaseConnection()
+	userRepository  repository.UserRepository  = repository.NewUserRepository(db)
+	notesRepository repository.NotesRepository = repository.NewNotesRepository(db)
+	jwtService      service.JWTService         = service.NewJWTService()
+	userService     service.UserService        = service.NewUserService(userRepository)
+	authService     service.AuthService        = service.NewAuthService(userRepository)
+	noteService     service.NoteService        = service.NewNoteService(notesRepository)
+	authController  controller.AuthController  = controller.NewAuthController(authService, jwtService)
+	userController  controller.UserController  = controller.NewUserController(userService, jwtService)
+	noteController  controller.NoteController  = controller.NewNotesController(noteService, jwtService)
 )
 
 func main() {
@@ -36,5 +39,15 @@ func main() {
 		userRoutes.PUT("/profile", userController.Update)
 	}
 
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	noteRoutes := r.Group("api/notes", middleware.AuthorizeJWT(jwtService))
+	{
+		noteRoutes.GET("/", noteController.All)
+		noteRoutes.POST("/", noteController.Insert)
+		noteRoutes.GET("/:id", noteController.FindById)
+		noteRoutes.PUT("/:id", noteController.Update)
+		noteRoutes.DELETE("/:id", noteController.Delete)
+
+	}
+
+	r.Run()
 }
