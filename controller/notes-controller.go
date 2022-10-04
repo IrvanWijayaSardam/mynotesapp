@@ -105,13 +105,13 @@ func (c *noteController) Update(context *gin.Context) {
 }
 
 func (c *noteController) Delete(context *gin.Context) {
-	var note entity.Notes
+	var notes entity.Notes
 	id, err := strconv.ParseUint(context.Param("id"), 0, 0)
 	if err != nil {
-		response := helper.BuildErrorResponse("Failed to get id", "No Param ID Found", helper.EmptyObj{})
+		response := helper.BuildErrorResponse("Failed tou get id", "No param id were found", helper.EmptyObj{})
 		context.JSON(http.StatusBadRequest, response)
 	}
-	note.ID = id
+	notes.ID = id
 	authHeader := context.GetHeader("Authorization")
 	token, errToken := c.jwtService.ValidateToken(authHeader)
 	if errToken != nil {
@@ -119,8 +119,8 @@ func (c *noteController) Delete(context *gin.Context) {
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	userID := fmt.Sprintf("%v", claims["userid"])
-	if c.noteService.IsAllowedToEdit(userID, note.UserID) {
-		c.noteService.Delete(note)
+	if c.noteService.IsAllowedToEdit(userID, notes.ID) {
+		c.noteService.Delete(notes)
 		res := helper.BuildResponse(true, "Deleted", helper.EmptyObj{})
 		context.JSON(http.StatusOK, res)
 	} else {
