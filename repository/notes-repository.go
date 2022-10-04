@@ -10,7 +10,7 @@ type NotesRepository interface {
 	UpdateNotes(b *entity.Notes) entity.Notes
 	DeleteNotes(b *entity.Notes)
 	AllNotes() []entity.Notes
-	FindNotesById(notesID uint64) entity.Notes
+	FindNotesById(notesUserID uint64) entity.Notes
 }
 
 type notesConnection struct {
@@ -42,7 +42,7 @@ func (db *notesConnection) DeleteNotes(b *entity.Notes) {
 
 func (db *notesConnection) FindNotesById(UserID uint64) entity.Notes {
 	var note entity.Notes
-	db.connection.Preload("UserID").Find(&note, UserID)
+	db.connection.Preload("user_id").Find(&note, UserID)
 	return note
 }
 
