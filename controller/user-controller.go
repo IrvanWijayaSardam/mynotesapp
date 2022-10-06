@@ -35,6 +35,7 @@ func (c *userController) Update(context *gin.Context) {
 	if errDTO != nil {
 		res := helper.BuildErrorResponse("Failed to process request", errDTO.Error(), helper.EmptyObj{})
 		context.AbortWithStatusJSON(http.StatusBadRequest, res)
+		return
 	}
 	authHeader := context.GetHeader("Authorization")
 	token, errToken := c.jwtService.ValidateToken(authHeader)
