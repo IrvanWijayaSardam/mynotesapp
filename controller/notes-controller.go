@@ -90,7 +90,7 @@ func (c *noteController) Update(context *gin.Context) {
 	}
 	claims := token.Claims.(jwt.MapClaims)
 	userID := fmt.Sprintf("%v", claims["userid"])
-	if c.noteService.IsAllowedToEdit(userID, noteUpdateDTO.UserID) {
+	if c.noteService.IsAllowedToEdit(userID, noteUpdateDTO.ID) {
 		id, errID := strconv.ParseUint(userID, 10, 64)
 		if errID == nil {
 			noteUpdateDTO.UserID = id
